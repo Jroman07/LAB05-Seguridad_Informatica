@@ -6,6 +6,14 @@
   },
   "scripts": {
     "start": "node server.js",
-    "test": "mocha"
+    "test": "jest --runInBand --testPathIgnorePatterns=tests/integration tests/e2e",
+    "test:unit": "jest test tests/unit --runInBand",
+    "test:integration": "jest tests/integration --runInBand --env=node",
+    "test:e2e": "playwright test --project=chromium --headed"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.64.1",
+    "jest": "^30.5.2",
+    "socket.io-client": "^4.8.4"
   }
 }
