@@ -1,6 +1,6 @@
 const {test,expect} = require('@playwright/test');
 const path = require('path');
-const evidence = path.resolve(__dirname,'../../../../evidencias');
+const evidence = path.resolve(__dirname,'../../test-results/evidencias-ux');
 test.beforeEach(async ({page}) => {
   await page.goto('/');
   await expect(page.locator('#connection')).toHaveText('Conectado al backend');

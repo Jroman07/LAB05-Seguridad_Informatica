@@ -29,7 +29,21 @@ Playwright abre Chromium con interfaz visible y verifica carga real de imagen, r
 
 La configuración utiliza el motor Chromium del Microsoft Edge instalado (`channel: msedge`). Para usar Chrome for Testing de Playwright, instalarlo y ejecutar con `LAB_BROWSER_CHANNEL=chromium`. El Chromium descargado no pudo iniciarse en este equipo (spawn UNKNOWN); las cinco pruebas aprobaron en el canal msedge con las mismas comprobaciones.
 
-## Validación y representación
+## Apariencia y uso
+
+El chat adapta su formulario a móvil (320x640) y escritorio (1280x900). La conversación tiene su propia área de desplazamiento y el formulario permanece en el flujo, sin cubrir mensajes. La bienvenida se muestra solo cuando no hay mensajes. Las etiquetas Nombre, Mensaje y Enviar mantienen la navegación por teclado: Tab recorre los controles y Enter desde Mensaje envía. Los cambios de conexión y los mensajes entrantes ofrecen anuncios accesibles sin mover el foco de escritura.
+
+Las comprobaciones automáticas de distribución y teclado están en `tests/e2e/ux.spec.js` y se ejecutan con `npm run test:e2e`. Las capturas de esta revisión se guardan en `test-results`, separadas de las evidencias académicas anteriores. La lectura con una tecnología de asistencia y el teclado virtual en un móvil físico requieren revisión manual adicional.
+
+El estado muestra Conectando, Conectado al backend o Desconectado. Sin conexión puedes editar tu borrador, pero no enviarlo. Mientras aparece Enviando, el formulario conserva el texto y bloquea nuevos envíos; solo vacía Mensaje cuando el servidor confirma la aceptación. Nombre se conserva. Si se rechaza la entrada, aparece un único aviso y el texto queda disponible para corregirlo.
+
+Si pasan cinco segundos sin confirmación, o se pierde la conexión durante el envío, se avisa: «No se pudo confirmar la entrega. Revisa la conversación antes de reenviar». El texto permanece y no hay reintentos automáticos. Una confirmación tardía no borra un borrador posterior. La advertencia no significa que el mensaje necesariamente haya fallado: pudo llegar al grupo sin que se recibiera la confirmación.
+
+Los casos de confirmación, rechazo, timeout y desconexión están en `tests/e2e/composition.spec.js`. Los recorridos de aceptación usan el backend real; las pruebas de confirmación tardía retienen su callback únicamente desde el cliente instrumentado para la prueba. `npm run test:integration` comprueba también que se devuelve una única confirmación y que los rechazos ofrecen un error utilizable.
+
+Si una imagen o un video directo no carga, aparece un aviso junto al recurso y se conservan el remitente, la URL y los mensajes anteriores. YouTube mantiene un marco con título y origen fijo; el chat no puede comprobar los errores internos del reproductor externo. Las pruebas usan recursos locales inexistentes para los errores y comprueban título y origen del marco sin depender de YouTube.
+
+## Validación de contenido
 
 `validarMensaje` también se exporta como `validateMessage` para conservar compatibilidad. Rechaza JSON incorrecto, etiquetas HTML, esquemas ejecutables, nombres peligrosos y URLs ajenas a los formatos permitidos. Acepta HTTP/HTTPS con extensión de imagen o video y URLs de YouTube con identificador válido. Valida el color con una lista de caracteres permitidos.
 

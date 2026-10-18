@@ -38,3 +38,27 @@ test.each(["<script>alert('Inyección de script');</script>",'https://example.co
   expect(received).not.toHaveBeenCalled(); expect(spy).toHaveBeenCalledWith(raw);
   receiver.off('Evento-Mensaje-Server',received);
 });
+
+test.each([['Hola con confirmación',true],["<script>alert('x');</script>",false]])('una confirmación por envío: %s',async (mensaje,ok) => {
+  const callback=jest.fn();
+  const broadcast=jest.fn(); const rejected=jest.fn();
+  receiver.on('Evento-Mensaje-Server',broadcast); sender.on('Mensaje-Rechazado',rejected);
+  try {
+    const result=await new Promise((resolve,reject) => sender.timeout(2000).emit('Evento-Mensaje-Server',
+      JSON.stringify({nombre:'José',mensaje}),(...args) => {
+        callback(...args); args[0] ? reject(args[0]) : resolve(args[1]);
+      }));
+    await new Promise(resolve=>setTimeout(resolve,80));
+    expect(callback).toHaveBeenCalledTimes(1);
+    expect(result.ok).toBe(ok);
+    expect(broadcast).toHaveBeenCalledTimes(ok?1:0);
+    expect(rejected).toHaveBeenCalledTimes(ok?0:1);
+    if(ok) expect(result.message.mensaje).toBe(mensaje);
+    else {
+      expect(typeof result.error).toBe('string'); expect(result.error.length).toBeGreaterThan(0);
+      expect(rejected.mock.calls[0][0].error).toBe(result.error);
+    }
+  } finally {
+    receiver.off('Evento-Mensaje-Server',broadcast); sender.off('Mensaje-Rechazado',rejected);
+  }
+});
