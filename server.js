@@ -34,6 +34,8 @@ if (require.main === module) {
     }
     process.exit(1);
   });
-  http.listen(port, '127.0.0.1', () => console.log('UNA Chat http://127.0.0.1:' + port));
+  http.listen(port, '0.0.0.0', () => {
+    console.log(`UNA Chat escuchando en el puerto ${port}`);
+  });
 }
 module.exports = {createChatServer};
