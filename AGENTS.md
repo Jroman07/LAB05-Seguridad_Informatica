@@ -21,7 +21,7 @@
 
 Lee únicamente la guía pertinente antes de modificar esa área:
 
-- [Ejecución y pruebas](agents/ejecucion-y-pruebas.md): puerto ocupado, navegadores, separación de suites, capturas y revisiones manuales.
+- [Ejecución y pruebas](agents/ejecucion-y-pruebas.md): puerto ocupado, navegadores, separación de suites, integración continua con Render, capturas y revisiones manuales.
 - [Contratos del chat](agents/contratos-del-chat.md): validación, envío, URLs, representación segura y compatibilidad de la interfaz.
 - [Flujo de OpenSpec](agents/openspec.md): planificación, implementación y cierre de cambios.
 

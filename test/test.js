@@ -9,7 +9,8 @@ describe('unalib', function(){
 
     it('deberia devolver true para 8297-8547', function(){
 
-      assert.equal(val.is_valid_phone('8297-8547'), true);
+      // LAB06: fallo intencional temporal para demostrar el bloqueo del despliegue.
+      assert.equal(val.is_valid_phone('8297-8547'), false);
 
     });
 

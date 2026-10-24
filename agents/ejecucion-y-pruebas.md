@@ -38,7 +38,15 @@ Después ejecuta el comando end-to-end de la tabla principal. Para volver al can
 Remove-Item Env:LAB_BROWSER_CHANNEL
 ```
 
-## Qué comprobar
+## Integración continua y Render
+
+- `.github/workflows/deploy.yml` ejecuta `npm test` y `npm run test:integration` con Node.js 24 al actualizar `main`.
+- Instala dependencias con `npm ci --include=dev`: Jest y socket.io-client son necesarios para las pruebas.
+- El trabajo `deploy` depende de `test` mediante `needs: test`; una prueba fallida omite la llamada al Deploy Hook.
+- Mantén Auto-Deploy desactivado en Render para que las publicaciones dependan del workflow.
+- El Deploy Hook recibe el SHA del commit probado. Un workflow exitoso confirma la solicitud; verifica el estado Live y el mismo commit en Render.
+
+## Comprobaciones manuales
 
 - Comprueba móvil a 320x640 y escritorio a 1280x900, sin desbordamiento horizontal ni controles cubiertos.
 - En end-to-end verifica carga real de imágenes y reproducción de video con los medios locales de `public/media`.
