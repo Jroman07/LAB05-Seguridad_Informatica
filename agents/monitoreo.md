@@ -30,3 +30,16 @@ Cronitor consulta la URL pública mediante HTTP GET. Ese resultado demuestra
 disponibilidad HTTP; las pruebas del chat verifican adicionalmente Socket.IO.
 La exportación hacia Grafana Cloud corresponde exclusivamente al entorno local
 del laboratorio, incluido el contenedor local.
+
+## OpenTelemetry local
+
+`libs/telemetry.js` se carga antes de Express. Con endpoint vacío o `RENDER=true`
+no inicializa ningún SDK de OpenTelemetry. El entorno de las señales se fija
+en `local`. Se instrumenta el evento real de mensajes, sin exportar contenido,
+nombres, encabezados ni variables del entorno. No se necesita un proxy OTLP
+del navegador: la exportación procede exclusivamente del servidor Node.js.
+
+Consulta [Reproducción del laboratorio 07](../lab07/README.md) para variables,
+consultas, Docker y la carga Socket.IO. La suite de integración comprueba el
+envío protobuf de tres señales a un receptor temporal local y la correlación
+por trace_id, pero no sustituye la comprobación de recepción en Grafana Cloud.

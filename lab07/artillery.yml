@@ -1,0 +1,19 @@
+config:
+  target: "http://127.0.0.1:3000"
+  phases:
+    - duration: 60
+      arrivalRate: 5
+      name: "300 mensajes previstos"
+  socketio:
+    transports: ["websocket"]
+scenarios:
+  - name: "Un mensaje por usuario virtual"
+    engine: socketio
+    flow:
+      - emit:
+          channel: "Evento-Mensaje-Server"
+          data: '{"nombre":"Artillery","mensaje":"Prueba de carga Lab07","color":"#245b78"}'
+        acknowledge:
+          match:
+            json: "$.0.ok"
+            value: true
