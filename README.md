@@ -13,6 +13,14 @@ npm start
 
 Abrir http://127.0.0.1:3000. Frontend y backend se sirven desde el mismo proceso Express. El envío usa el evento Socket.IO `Evento-Mensaje-Server`.
 
+## Monitoreo del laboratorio 07
+
+La configuración de Sentry y Render está documentada en
+[Monitoreo](agents/monitoreo.md). Configura `SENTRY_DSN` y
+`SENTRY_ENVIRONMENT=production` en el entorno del servicio de Render. Sin DSN
+el chat funciona sin enviar eventos. `.env.example` contiene únicamente los
+nombres de las variables. Este despliegue no envía telemetría a Grafana Cloud.
+
 ## Pruebas
 
 ```sh

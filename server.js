@@ -1,4 +1,5 @@
 'use strict';
+const {captureChatError} = require('./libs/error-reporting');
 const express = require('express');
 const {createServer} = require('http');
 const {Server} = require('socket.io');
@@ -16,6 +17,7 @@ function createChatServer() {
         io.emit('Evento-Mensaje-Server', msg);
         if (typeof acknowledge === 'function') acknowledge({ok: true, message: JSON.parse(msg)});
       } catch (error) {
+        captureChatError(error);
         socket.emit('Mensaje-Rechazado', {error: error.message});
         if (typeof acknowledge === 'function') acknowledge({ok: false, error: error.message});
       }
