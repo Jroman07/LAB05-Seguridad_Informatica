@@ -37,7 +37,7 @@ requiere un access token firmado con RS256, con issuer, audience y vencimiento
 válidos. React obtiene el token con getAccessTokenSilently y lo envía en auth
 del handshake, nunca en una URL. El backend usa el SDK oficial de Auth0.
 Al vencer el token, se cierra la conexión para impedir nuevos envíos y recepción.
-El frontend React todavía no se ha publicado en Render.
+En Render, Node.js sirve el frontend React compilado desde el mismo origen HTTPS.
 
 Registrar en Auth0 la API https://una-chat-lab08/api con RS256. En su pestaña
 Application Access, autorizar User-Delegated Access para la SPA de UNA Chat
@@ -99,3 +99,28 @@ mostrando solo su código. No registra ni usa ese valor en el login PKCE.
 
 El Dockerfile también compila React en una primera etapa y copia los módulos
 del backend y su certificado público a la imagen final. No incluye .env.
+
+## Comparar la rotación sin exponer secretos
+
+Antes de rotar, ejecutar node scripts/check-rotation.cjs --prepare. Conserva
+el valor anterior en .env.lab08-rotation.local, excluido de Git. No entregar
+ese archivo ni incluirlo en un ZIP o una captura. No sobreescribe una copia
+anterior si ya existe.
+
+Rotar el Client Secret en Auth0 y actualizar el mismo registro de Vault.
+Ejecutar node scripts/check-rotation.cjs después de la propagación del cambio.
+El script comprueba que el valor cambió y realiza dos POST a /oauth/token
+con los mismos campos salvo client_secret y un código deliberadamente falso.
+El reporte test-results/lab08-rotation.json registra horas UTC, estado HTTP
+y error. No incluye secretos, contraseñas, tokens ni cuerpos de petición.
+
+La guía espera invalid_client para el anterior e invalid_grant para el nuevo.
+Conservar siempre el código real de Auth0: un 401 access_denied puede aparecer
+en lugar de invalid_client. matchesGuideExpectation compara literalmente los
+dos nombres de error esperados; no reemplaza la interpretación del resultado.
+El inicio de sesión SPA usa PKCE y no demuestra que el Client Secret se use
+en el navegador. Verificar aparte una sesión nueva tras el despliegue.
+
+Después de conservar el reporte, ejecutar node scripts/check-rotation.cjs
+--cleanup para eliminar la copia privada anterior. La evidencia pública
+puede mostrarse con Get-Content test-results/lab08-rotation.json en PowerShell.
