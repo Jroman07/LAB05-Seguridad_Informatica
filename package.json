@@ -1,5 +1,6 @@
 {
   "dependencies": {
+    "@auth0/auth0-react": "2.30.0",
     "@opentelemetry/api": "1.10.0",
     "@opentelemetry/exporter-logs-otlp-proto": "0.300.0",
     "@opentelemetry/exporter-metrics-otlp-proto": "0.300.0",
@@ -10,7 +11,11 @@
     "@opentelemetry/sdk-node": "0.300.0",
     "@sentry/node": "11.10.0",
     "express": "*",
+    "express-oauth2-jwt-bearer": "1.11.0",
     "mocha": "^10.2.0",
+    "pg": "8.23.1",
+    "react": "19.3.1",
+    "react-dom": "19.3.1",
     "socket.io": "*"
   },
   "scripts": {
@@ -18,11 +23,15 @@
     "test": "jest --runInBand --testPathIgnorePatterns=tests/integration tests/e2e",
     "test:unit": "jest test tests/unit --runInBand",
     "test:integration": "jest tests/integration --runInBand --env=node",
-    "test:e2e": "playwright test --project=chromium --headed"
+    "test:e2e": "playwright test --project=chromium --headed",
+    "dev:react": "vite --config vite.config.mjs --port 5173 --strictPort",
+    "build:react": "vite build --config vite.config.mjs"
   },
   "devDependencies": {
     "@playwright/test": "^1.64.1",
+    "@vitejs/plugin-react": "5.2.0",
     "jest": "^30.5.2",
-    "socket.io-client": "^4.8.4"
+    "socket.io-client": "4.8.4",
+    "vite": "7.3.7"
   }
 }

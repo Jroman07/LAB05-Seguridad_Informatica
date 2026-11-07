@@ -22,6 +22,8 @@ jobs:
           cache: npm
       - name: Instalar dependencias de desarrollo
         run: npm ci --include=dev
+      - name: Compilar frontend React
+        run: npm run build:react
       - name: Ejecutar pruebas unitarias
         run: npm test
       - name: Ejecutar pruebas de integracion

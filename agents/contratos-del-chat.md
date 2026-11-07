@@ -30,3 +30,16 @@ Consulta esta guía antes de modificar validación, envío o interfaz. Describe 
 - Deja la bienvenida fuera de la lista de mensajes y conserva el foco al recibir mensajes.
 
 Los criterios de prueba de estas áreas están en [Ejecución y pruebas](ejecucion-y-pruebas.md#qué-comprobar).
+
+## Frontend React y Auth0
+
+El frontend de Lab08 se encuentra en client/ y se ejecuta con npm run dev:react
+en el puerto fijo 5173. Usa el SDK oficial de Auth0, con identificadores públicos
+en auth-config.js y sin Client Secret. La configuración y las limitaciones de
+esta etapa están en lab08/README.md. Los identificadores públicos compartidos
+están en auth0.config.json. El backend valida access tokens RS256 con el SDK
+oficial express-oauth2-jwt-bearer, issuer y audience; bloquea Socket.IO sin
+credencial válida y cierra conexiones al vencer el token. No registrar tokens.
+La fábrica createChatServer permite inyectar autorización para pruebas; la
+ejecución normal siempre habilita la autorización. isAuthenticated del
+navegador no sustituye esa comprobación del servidor.

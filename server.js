@@ -5,14 +5,38 @@ const express = require('express');
 const {createServer} = require('http');
 const {Server} = require('socket.io');
 const validation = require('./libs/unalib');
-function createChatServer() {
+const {createAuthorization} = require('./server/auth');
+const authConfig = require('./auth0.config.json');
+const {existsSync} = require('node:fs');
+const {join} = require('node:path');
+const clientEntry = join(__dirname, 'dist/client/index.html');
+function createChatServer({authorization = createAuthorization()} = {}) {
   const app = express();
   const http = createServer(app);
   const io = new Server(http);
-  app.get('/', (req, res) => res.sendFile(__dirname + '/index.html'));
+  if (authorization) io.use(authorization.socketMiddleware);
+  app.get('/auth/config', (req, res) => res.json({
+    enabled: Boolean(authorization),
+    domain: process.env.AUTH0_DOMAIN || authConfig.domain,
+    clientId: process.env.AUTH0_CLIENT_ID || authConfig.clientId,
+    audience: process.env.AUTH0_AUDIENCE || authConfig.audience
+  }));
+  app.get('/sala', ...(authorization ? [authorization.httpMiddleware] : []),
+    (req, res) => res.json({authenticated: Boolean(authorization)}));
+  app.use('/assets', express.static(join(__dirname, 'dist/client/assets')));
+  app.get('/', (req, res) => res.sendFile(
+    existsSync(clientEntry) ? clientEntry : join(__dirname, 'index.html')
+  ));
   app.use('/media', express.static(__dirname + '/public/media'));
   io.on('connection', socket => {
     socket.on('Evento-Mensaje-Server', (raw, acknowledge) => {
+      if (authorization && socket.data.identity.exp * 1000 <= Date.now()) {
+        if (typeof acknowledge === 'function') acknowledge({
+          ok: false, error: 'Tu sesión venció. Vuelve a iniciar sesión.'
+        });
+        socket.disconnect(true);
+        return;
+      }
       try {
         telemetry.processMessage(() => {
           const msg = telemetry.step('chat.validar', () => validation.validarMensaje(raw));
@@ -39,8 +63,27 @@ if (require.main === module) {
     }
     process.exit(1);
   });
-  http.listen(port, '0.0.0.0', () => {
-    console.log(`UNA Chat escuchando en el puerto ${port}`);
+  (async () => {
+    if (process.env.RENDER === 'true' && !existsSync(clientEntry)) {
+      throw Object.assign(new Error(), {code: 'REACT_BUILD_MISSING'});
+    }
+    if (process.env.RENDER === 'true' && !process.env.VAULT_DATABASE_URL?.trim()) {
+      throw Object.assign(new Error(), {code: 'VAULT_CONFIG_MISSING'});
+    }
+    if (process.env.VAULT_DATABASE_URL?.trim()) {
+      const vault = await require('./server/vault').readVaultSecret();
+      console.log(JSON.stringify({
+        event: 'vault_ready', databaseUser: vault.databaseUser,
+        tlsVerified: vault.tlsVerified, secretLength: vault.secret.length
+      }));
+    }
+    http.listen(port, '0.0.0.0', () => {
+      console.log(`UNA Chat escuchando en el puerto ${port}`);
+    });
+  })().catch(error => {
+    const code = /^[A-Z0-9_]{1,64}$/.test(error.code || '') ? error.code : 'STARTUP_FAILED';
+    console.error(JSON.stringify({event: 'startup_failed', error: code}));
+    process.exit(1);
   });
   let stopping = false;
   const stop = () => {

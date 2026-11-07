@@ -6,4 +6,5 @@ playwright-report/
 .env.*
 !.env.example
 lab07/resultados/
+dist/
 

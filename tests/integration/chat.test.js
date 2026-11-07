@@ -3,7 +3,7 @@ const validation = require('../../libs/unalib');
 const {createChatServer} = require('../../server');
 let chat, sender, receiver, spy;
 beforeAll(async () => {
-  chat = createChatServer();
+  chat = createChatServer({authorization: null});
   await new Promise(resolve => chat.http.listen(0,'127.0.0.1',resolve));
   const url = 'http://127.0.0.1:' + chat.http.address().port;
   sender = connect(url,{autoConnect:false,transports:['websocket']});

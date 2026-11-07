@@ -43,3 +43,15 @@ Consulta [Reproducción del laboratorio 07](../lab07/README.md) para variables,
 consultas, Docker y la carga Socket.IO. La suite de integración comprueba el
 envío protobuf de tres señales a un receptor temporal local y la correlación
 por trace_id, pero no sustituye la comprobación de recepción en Grafana Cloud.
+
+## Vault del backend
+
+server/vault.js consulta únicamente la función privada de Vault usando el
+rol una_chat_backend y TLS con verificación del certificado y hostname.
+scripts/check-vault.cjs carga el .env privado e imprime solo éxito, usuario,
+verificación TLS, nombre y longitud del secreto. Ante errores solo imprime
+un código; no registrar el objeto pg, la URI, stack ni el valor del secreto.
+El módulo no se importa al frontend y no sustituye la autorización del chat.
+En Render, el servidor lee Vault antes de escuchar y detiene el arranque si
+falla la conexión o falta el frontend compilado. El log vault_ready contiene
+solo usuario, TLS y longitud; el secreto no forma parte del login PKCE.

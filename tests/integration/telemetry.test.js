@@ -50,7 +50,7 @@ test('los mensajes reales exportan tres señales y permiten correlacionar un log
         const {io} = require('socket.io-client');
         const {createChatServer} = require('./server');
         const telemetry = require('./libs/telemetry');
-        const chat = createChatServer();
+        const chat = createChatServer({authorization: null});
         await new Promise(resolve => chat.http.listen(0, '127.0.0.1', resolve));
         const client = io('http://127.0.0.1:' + chat.http.address().port,
           {transports:['websocket'], autoConnect:false, reconnection:false});
